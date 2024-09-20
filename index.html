@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Таймер и Всемирные Часы</title>
+    <title>Таймеры событий</title>
     <style>
         body {
             background-color: #1b1b1b;
             color: #e0e0e0;
             font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            overflow-y: auto;
+            margin: 0;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-            overflow: hidden;
         }
 
         .container {
@@ -45,80 +44,13 @@
             text-shadow: 2px 2px 4px #000;
         }
 
-        button, select, input {
-            padding: 10px;
-            margin: 5px;
-            background-color: #444;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            transition: background-color 0.3s ease;
-            width: 100%;
-        }
-
-        button:hover, select:hover, input:hover {
-            background-color: #555;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #2b2b2b;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            max-width: 300px;
-            width: 90%;
-        }
-
-        .modal-content button {
-            background-color: #444;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            width: 100%;
-        }
-
-        .modal-content button:hover {
-            background-color: #555;
-        }
-
-        .clock, .timer, .countdown {
+        .countdown-section {
             margin-bottom: 20px;
-        }
-
-        select {
-            width: 100%;
             text-align: center;
-        }
-
-        .time-input {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .time-input input {
-            width: 60px;
-            text-align: center;
-            font-size: 18px;
+            padding: 10px;
+            background-color: #2b2b2b;
+            border-radius: 10px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
         }
 
         @media (max-width: 600px) {
@@ -129,174 +61,69 @@
             .container h1 {
                 font-size: 20px;
             }
-
-            .time-input input {
-                width: 40px;
-                font-size: 16px;
-            }
-
-            button, select {
-                padding: 8px;
-                font-size: 14px;
-            }
         }
     </style>
 </head>
 <body>
 
-<div class="container clock">
-    <h1>Всемирные Часы</h1>
-    <div id="worldClock" class="time-display">00:00:00</div>
-    <select id="timezoneSelect" onchange="changeTimezone()">
-        <option value="UTC">UTC</option>
-        <option value="Europe/Moscow">Москва (Europe/Moscow)</option>
-        <option value="Asia/Tashkent">Ташкент (Asia/Tashkent)</option>
-        <option value="America/New_York">Нью-Йорк (America/New_York)</option>
-        <option value="Asia/Tokyo">Токио (Asia/Tokyo)</option>
-        <option value="Australia/Sydney">Сидней (Australia/Sydney)</option>
-    </select>
-</div>
-
-<div class="container timer">
-    <h1>Таймер</h1>
-    <div class="time-input">
-        <input type="number" id="minutesInput" placeholder="Мин" min="0" value="1">
-        <input type="number" id="secondsInput" placeholder="Сек" min="0" value="0">
-    </div>
-    <div id="timerDisplay" class="time-display">01:00</div>
-    <button onclick="startTimer()">Старт</button>
-    <button onclick="stopTimer()">Стоп</button>
-    <button onclick="resetTimer()">Сброс</button>
-</div>
-
 <div class="container countdown">
-    <h1>Таймеры</h1>
-    <div id="newYearSection">
-        <h2>Таймер до Нового Года</h2>
+    <h1>Таймеры событий</h1>
+    <div id="newYearSection" class="countdown-section">
+        <h2> до Нового Года</h2>
         <div id="newYearCountdown" class="time-display">00 д 00 ч 00 м 00 с</div>
     </div>
-    <button onclick="swapCountdowns()">Поменять местами</button>
-    <div id="may25Section">
-        <h2>Таймер до 25 Мая</h2>
+    <div id="may25Section" class="countdown-section">
+        <h2> до 25 Мая</h2>
         <div id="may25Countdown" class="time-display">00 д 00 ч 00 м 00 с</div>
     </div>
-</div>
-
-<div class="modal" id="myModal">
-    <div class="modal-content">
-        <h2 id="modalMessage">Сообщение</h2>
-        <button onclick="closeModal()">Закрыть</button>
+    <div id="navruzSection" class="countdown-section">
+        <h2> до Навруза</h2>
+        <div id="navruzCountdown" class="time-display">00 д 00 ч 00 м 00 с</div>
+    </div>
+    <div id="defenderSection" class="countdown-section">
+        <h2> до Дня Защитника Отечества</h2>
+        <div id="defenderCountdown" class="time-display">00 д 00 ч 00 м 00 с</div>
+    </div>
+    <div id="womenSection" class="countdown-section">
+        <h2> до Международного Женского Дня</h2>
+        <div id="womenCountdown" class="time-display">00 д 00 ч 00 м 00 с</div>
     </div>
 </div>
 
 <script>
-    let timezone = 'UTC';
+    const newYearDate = new Date('2025-01-01T00:00:00Z');
+    const may25Date = new Date('2025-05-25T00:00:00Z');
+    const navruzDate = new Date('2025-03-21T00:00:00Z');
+    const defenderDate = new Date('2025-01-14T00:00:00Z');
+    const womenDate = new Date('2025-03-08T00:00:00Z');
 
-    function updateWorldClock() {
+    function updateCountdowns() {
         const now = new Date();
-        const options = {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZone: timezone
-        };
-        const formattedTime = new Intl.DateTimeFormat('ru-RU', options).format(now);
-        document.getElementById('worldClock').textContent = formattedTime;
+        updateCountdown(newYearDate, 'newYearCountdown');
+        updateCountdown(may25Date, 'may25Countdown');
+        updateCountdown(navruzDate, 'navruzCountdown');
+        updateCountdown(defenderDate, 'defenderCountdown');
+        updateCountdown(womenDate, 'womenCountdown');
     }
 
-    function changeTimezone() {
-        timezone = document.getElementById('timezoneSelect').value;
-        updateWorldClock();
-    }
-
-    setInterval(updateWorldClock, 1000);
-    
-    let timerInterval;
-    let timerTime = 60;
-
-    function startTimer() {
-        stopTimer();
-        let minutes = parseInt(document.getElementById('minutesInput').value) || 0;
-        let seconds = parseInt(document.getElementById('secondsInput').value) || 0;
-        timerTime = minutes * 60 + seconds;
-
-        timerInterval = setInterval(function() {
-            if (timerTime > 0) {
-                timerTime--;
-                const minutes = Math.floor(timerTime / 60);
-                const seconds = timerTime % 60;
-                const timerDisplay = document.getElementById('timerDisplay');
-                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            } else {
-                stopTimer();
-                showModal("Время вышло");
-            }
-        }, 1000);
-    }
-
-    function stopTimer() {
-        clearInterval(timerInterval);
-    }
-
-    function resetTimer() {
-        stopTimer();
-        document.getElementById('minutesInput').value = 1;
-        document.getElementById('secondsInput').value = 0;
-        document.getElementById('timerDisplay').textContent = "01:00";
-    }
-
-    function showModal(message) {
-        document.getElementById('modalMessage').textContent = message;
-        document.getElementById('myModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-        document.getElementById('myModal').style.display = 'none';
-    }
-
-    function updateCountdown() {
+    function updateCountdown(targetDate, countdownElementId) {
         const now = new Date();
+        const timeDiff = targetDate - now;
 
-        // Таймер до Нового Года
-        const newYearDate = new Date(now.getFullYear() + 1, 0, 1);
-        const newYearDiff = newYearDate - now;
-        updateCountdownDisplay('newYearCountdown', newYearDiff);
-
-        // Таймер до 25 Мая
-        const may25Date = new Date(now.getFullYear(), 4, 25);
-        const may25Diff = may25Date - now;
-        if (may25Diff < 0) {
-            may25Date.setFullYear(may25Date.getFullYear() + 1);
+        if (timeDiff < 0) {
+            document.getElementById(countdownElementId).textContent = 'Событие наступило!';
+            return;
         }
-        const may25DiffNew = may25Date - now;
-        updateCountdownDisplay('may25Countdown', may25DiffNew);
+
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+        document.getElementById(countdownElementId).textContent = `${days} д ${hours} ч ${minutes} м ${seconds} с`;
     }
 
-    function updateCountdownDisplay(elementId, diff) {
-        if (diff > 0) {
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            document.getElementById(elementId).textContent = `${days} д ${hours} ч ${minutes} м ${seconds} с`;
-        } else {
-            document.getElementById(elementId).textContent = "00 д 00 ч 00 м 00 с";
-        }
-    }
-
-    function swapCountdowns() {
-        const newYearElement = document.getElementById('newYearSection');
-        const may25Element = document.getElementById('may25Section');
-        if (newYearElement && may25Element) {
-            const newYearClone = newYearElement.cloneNode(true);
-            const may25Clone = may25Element.cloneNode(true);
-            may25Element.replaceWith(newYearClone);
-            newYearElement.replaceWith(may25Clone);
-        }
-    }
-
-    setInterval(updateCountdown, 1000);
+    setInterval(updateCountdowns, 1000);
 </script>
-
 </body>
 </html>
