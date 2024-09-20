@@ -213,10 +213,7 @@
         updateWorldClock();
     }
 
-    setInterval(() => {
-        updateWorldClock();
-        checkNewHour();
-    }, 1000);
+    setInterval(updateWorldClock, 1000);
     
     let timerInterval;
     let timerTime = 60;
@@ -263,13 +260,6 @@
         document.getElementById('secondsInput').value = 0;
         document.getElementById('timerDisplay').textContent = "01:00";
         document.getElementById('timerDisplay').style.color = '#e0e0e0';
-    }
-
-    function checkNewHour() {
-        const now = new Date();
-        if (now.getSeconds() === 0) {
-            showModal("Новый час");
-        }
     }
 
     function showModal(message) {
