@@ -79,6 +79,16 @@
             transform: scale(1.05);
         }
 
+        footer {
+            margin-top: auto;
+            padding: 10px;
+            text-align: center;
+            background-color: #333;
+            width: 100%;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.5);
+        }
+
         @media (max-width: 600px) {
             .time-display {
                 font-size: 28px;
@@ -115,7 +125,7 @@
     <select id="timezoneSelect" class="timezone-select" onchange="updateCountdowns()">
         <option value="UTC">UTC</option>
         <option value="Europe/Moscow">Москва</option>
-        <option value="Asia/Tashkent">Самарканд</option>
+        <option value="Asia/Tashkent">Ташкент</option>
         <option value="America/New_York">Нью-Йорк</option>
         <option value="Asia/Tokyo">Токио</option>
         <option value="Australia/Sydney">Сидней</option>
@@ -142,6 +152,10 @@
         <div id="womenCountdown" class="time-display">00 д 00 ч 00 м 00 с</div>
     </div>
 </div>
+
+<footer>
+    <p>created by Faxridin</p>
+</footer>
 
 <script>
     const timezoneOffset = {
