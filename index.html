@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таймер и Всемирные Часы</title>
+    <style>
+        body {
+            background-color: #1b1b1b;
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #2b2b2b;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .container h1 {
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .time-display {
+            font-size: 36px;
+            margin: 20px 0;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        button, select, input {
+            padding: 10px;
+            margin: 5px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover, select:hover, input:hover {
+            background-color: #555;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #2b2b2b;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 300px;
+            width: 90%;
+        }
+
+        .modal-content button {
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .modal-content button:hover {
+            background-color: #555;
+        }
+
+        .clock, .timer {
+            margin-bottom: 20px;
+        }
+
+        select {
+            width: 100%;
+            text-align: center;
+        }
+
+        .time-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .time-input input {
+            width: 60px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        @media (max-width: 600px) {
+            .time-display {
+                font-size: 28px;
+            }
+
+            .container h1 {
+                font-size: 20px;
+            }
+
+            .time-input input {
+                width: 40px;
+                font-size: 16px;
+            }
+
+            button, select {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container clock">
+    <h1>Всемирные Часы</h1>
+    <div id="worldClock" class="time-display">00:00:00</div>
+    <select id="timezoneSelect" onchange="changeTimezone()">
+        <option value="UTC">UTC</option>
+        <option value="Europe/Moscow">Москва (Europe/Moscow)</option>
+        <option value="Asia/Tashkent">Ташкент (Asia/Tashkent)</option>
+        <option value="America/New_York">Нью-Йорк (America/New_York)</option>
+        <option value="Asia/Tokyo">Токио (Asia/Tokyo)</option>
+        <option value="Australia/Sydney">Сидней (Australia/Sydney)</option>
+    </select>
+</div>
+
+<div class="container timer">
+    <h1>Таймер</h1>
+    <div class="time-input">
+        <input type="number" id="minutesInput" placeholder="Мин" min="0" value="1">
+        <input type="number" id="secondsInput" placeholder="Сек" min="0" value="0">
+    </div>
+    <div id="timerDisplay" class="time-display">01:00</div>
+    <button onclick="startTimer()">Старт</button>
+    <button onclick="stopTimer()">Стоп</button>
+    <button onclick="resetTimer()">Сброс</button>
+</div>
+
+<div class="modal" id="myModal">
+    <div class="modal-content">
+        <h2 id="modalMessage">Сообщение</h2>
+        <button onclick="closeModal()">Закрыть</button>
+    </div>
+</div>
+
+<script>
+    let timezone = 'UTC';
+
+    function updateWorldClock() {
+        const now = new Date();
+        const options = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: timezone
+        };
+        const formattedTime = new Intl.DateTimeFormat('ru-RU', options).format(now);
+        document.getElementById('worldClock').textContent = formattedTime;
+
+        const minutesToNextHour = 59 - now.getMinutes();
+        const secondsToNextHour = 60 - now.getSeconds();
+
+        if (minutesToNextHour <= 1 && secondsToNextHour <= 30) {
+            if (minutesToNextHour === 0 && secondsToNextHour <= 5) {
+                document.getElementById('worldClock').style.color = 'red';
+            } else if (minutesToNextHour === 0) {
+                document.getElementById('worldClock').style.color = 'orange';
+            } else if (minutesToNextHour === 1) {
+                document.getElementById('worldClock').style.color = 'yellow';
+            } else {
+                document.getElementById('worldClock').style.color = 'green';
+            }
+        } else {
+            document.getElementById('worldClock').style.color = '#e0e0e0';
+        }
+    }
+
+    function changeTimezone() {
+        timezone = document.getElementById('timezoneSelect').value;
+        updateWorldClock();
+    }
+
+    setInterval(() => {
+        updateWorldClock();
+        checkNewHour();
+    }, 1000);
+    
+    let timerInterval;
+    let timerTime = 60;
+
+    function startTimer() {
+        stopTimer();
+        let minutes = parseInt(document.getElementById('minutesInput').value) || 0;
+        let seconds = parseInt(document.getElementById('secondsInput').value) || 0;
+        timerTime = minutes * 60 + seconds;
+
+        timerInterval = setInterval(function() {
+            if (timerTime > 0) {
+                timerTime--;
+                const minutes = Math.floor(timerTime / 60);
+                const seconds = timerTime % 60;
+                const timerDisplay = document.getElementById('timerDisplay');
+                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (timerTime <= 5) {
+                    timerDisplay.style.color = 'red';
+                } else if (timerTime <= 15) {
+                    timerDisplay.style.color = 'orange';
+                } else if (timerTime <= 20) {
+                    timerDisplay.style.color = 'yellow';
+                } else if (timerTime <= 30) {
+                    timerDisplay.style.color = 'green';
+                } else {
+                    timerDisplay.style.color = '#e0e0e0';
+                }
+            } else {
+                stopTimer();
+                showModal("Время вышло");
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+        stopTimer();
+        document.getElementById('minutesInput').value = 1;
+        document.getElementById('secondsInput').value = 0;
+        document.getElementById('timerDisplay').textContent = "01:00";
+        document.getElementById('timerDisplay').style.color = '#e0e0e0';
+    }
+
+    function checkNewHour() {
+        const now = new Date();
+        if (now.getSeconds() === 0) {
+            showModal("Новый час");
+        }
+    }
+
+    function showModal(message) {
+        document.getElementById('modalMessage').textContent = message;
+        document.getElementById('myModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('myModal').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
