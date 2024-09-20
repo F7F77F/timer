@@ -6,8 +6,8 @@
     <title>Таймеры событий</title>
     <style>
         body {
-            background-color: #1b1b1b;
-            color: #e0e0e0;
+            background: linear-gradient(135deg, #4a4a4a, #1a1a1a);
+            color: #ffffff;
             font-family: 'Courier New', Courier, monospace;
             padding: 20px;
             overflow-y: auto;
@@ -23,34 +23,60 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
-            background-color: #2b2b2b;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            background-color: #2a2a2a;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             margin-bottom: 20px;
         }
 
         .container h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 28px;
             text-align: center;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
         }
 
         .time-display {
             font-size: 36px;
             margin: 20px 0;
             font-weight: bold;
-            text-shadow: 2px 2px 4px #000;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+            transition: color 0.3s;
+        }
+
+        .timezone-select {
+            margin: 10px 0;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            font-size: 16px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .timezone-select:hover {
+            background-color: #555;
         }
 
         .countdown-section {
             margin-bottom: 20px;
             text-align: center;
-            padding: 10px;
-            background-color: #2b2b2b;
+            padding: 15px;
+            background-color: #444;
             border-radius: 10px;
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+            width: 100%;
+            transition: transform 0.3s;
+        }
+
+        .countdown-section:hover {
+            transform: scale(1.05);
         }
 
         @media (max-width: 600px) {
@@ -59,46 +85,90 @@
             }
 
             .container h1 {
+                font-size: 24px;
+            }
+
+            .countdown-section {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .time-display {
+                font-size: 24px;
+            }
+
+            .container h1 {
                 font-size: 20px;
+            }
+
+            .timezone-select {
+                padding: 10px;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="container countdown">
+<div class="container">
     <h1>Таймеры событий</h1>
+    <select id="timezoneSelect" class="timezone-select" onchange="updateCountdowns()">
+        <option value="UTC">UTC</option>
+        <option value="Europe/Moscow">Москва</option>
+        <option value="Asia/Tashkent">Самарканд</option>
+        <option value="America/New_York">Нью-Йорк</option>
+        <option value="Asia/Tokyo">Токио</option>
+        <option value="Australia/Sydney">Сидней</option>
+    </select>
+
     <div id="newYearSection" class="countdown-section">
-        <h2> до Нового Года</h2>
+        <h2>Таймер до Нового Года</h2>
         <div id="newYearCountdown" class="time-display">00 д 00 ч 00 м 00 с</div>
     </div>
     <div id="may25Section" class="countdown-section">
-        <h2> до 25 Мая</h2>
+        <h2>Таймер до 25 Мая</h2>
         <div id="may25Countdown" class="time-display">00 д 00 ч 00 м 00 с</div>
     </div>
     <div id="navruzSection" class="countdown-section">
-        <h2> до Навруза</h2>
+        <h2>Таймер до Навруза</h2>
         <div id="navruzCountdown" class="time-display">00 д 00 ч 00 м 00 с</div>
     </div>
     <div id="defenderSection" class="countdown-section">
-        <h2> до Дня Защитника Отечества</h2>
+        <h2>Таймер до Дня Защитника Отечества</h2>
         <div id="defenderCountdown" class="time-display">00 д 00 ч 00 м 00 с</div>
     </div>
     <div id="womenSection" class="countdown-section">
-        <h2> до Международного Женского Дня</h2>
+        <h2>Таймер до Международного Женского Дня</h2>
         <div id="womenCountdown" class="time-display">00 д 00 ч 00 м 00 с</div>
     </div>
 </div>
 
 <script>
-    const newYearDate = new Date('2025-01-01T00:00:00Z');
-    const may25Date = new Date('2025-05-25T00:00:00Z');
-    const navruzDate = new Date('2025-03-21T00:00:00Z');
-    const defenderDate = new Date('2025-01-14T00:00:00Z');
-    const womenDate = new Date('2025-03-08T00:00:00Z');
+    const timezoneOffset = {
+        "UTC": 0,
+        "Europe/Moscow": 3,
+        "Asia/Tashkent": 5,
+        "America/New_York": -5,
+        "Asia/Tokyo": 9,
+        "Australia/Sydney": 11
+    };
+
+    function getTargetDate(targetDateString) {
+        const now = new Date();
+        const selectedTimezone = document.getElementById('timezoneSelect').value;
+        const offset = timezoneOffset[selectedTimezone];
+        const targetDate = new Date(targetDateString);
+        targetDate.setHours(targetDate.getHours() + offset);
+        return targetDate;
+    }
 
     function updateCountdowns() {
-        const now = new Date();
+        const newYearDate = getTargetDate('2025-01-01T00:00:00Z');
+        const may25Date = getTargetDate('2025-05-25T00:00:00Z');
+        const navruzDate = getTargetDate('2025-03-21T00:00:00Z');
+        const defenderDate = getTargetDate('2025-01-14T00:00:00Z');
+        const womenDate = getTargetDate('2025-03-08T00:00:00Z');
+
         updateCountdown(newYearDate, 'newYearCountdown');
         updateCountdown(may25Date, 'may25Countdown');
         updateCountdown(navruzDate, 'navruzCountdown');
