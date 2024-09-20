@@ -99,7 +99,7 @@
             background-color: #555;
         }
 
-        .clock, .timer {
+        .clock, .timer, .countdown {
             margin-bottom: 20px;
         }
 
@@ -169,6 +169,19 @@
     <button onclick="resetTimer()">Сброс</button>
 </div>
 
+<div class="container countdown">
+    <h1>Таймеры</h1>
+    <div id="newYearSection">
+        <h2>Таймер до Нового Года</h2>
+        <div id="newYearCountdown" class="time-display">00 д 00 ч 00 м 00 с</div>
+    </div>
+    <button onclick="swapCountdowns()">Поменять местами</button>
+    <div id="may25Section">
+        <h2>Таймер до 25 Мая</h2>
+        <div id="may25Countdown" class="time-display">00 д 00 ч 00 м 00 с</div>
+    </div>
+</div>
+
 <div class="modal" id="myModal">
     <div class="modal-content">
         <h2 id="modalMessage">Сообщение</h2>
@@ -189,23 +202,6 @@
         };
         const formattedTime = new Intl.DateTimeFormat('ru-RU', options).format(now);
         document.getElementById('worldClock').textContent = formattedTime;
-
-        const minutesToNextHour = 59 - now.getMinutes();
-        const secondsToNextHour = 60 - now.getSeconds();
-
-        if (minutesToNextHour <= 1 && secondsToNextHour <= 30) {
-            if (minutesToNextHour === 0 && secondsToNextHour <= 5) {
-                document.getElementById('worldClock').style.color = 'red';
-            } else if (minutesToNextHour === 0) {
-                document.getElementById('worldClock').style.color = 'orange';
-            } else if (minutesToNextHour === 1) {
-                document.getElementById('worldClock').style.color = 'yellow';
-            } else {
-                document.getElementById('worldClock').style.color = 'green';
-            }
-        } else {
-            document.getElementById('worldClock').style.color = '#e0e0e0';
-        }
     }
 
     function changeTimezone() {
@@ -231,18 +227,6 @@
                 const seconds = timerTime % 60;
                 const timerDisplay = document.getElementById('timerDisplay');
                 timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-                if (timerTime <= 5) {
-                    timerDisplay.style.color = 'red';
-                } else if (timerTime <= 15) {
-                    timerDisplay.style.color = 'orange';
-                } else if (timerTime <= 20) {
-                    timerDisplay.style.color = 'yellow';
-                } else if (timerTime <= 30) {
-                    timerDisplay.style.color = 'green';
-                } else {
-                    timerDisplay.style.color = '#e0e0e0';
-                }
             } else {
                 stopTimer();
                 showModal("Время вышло");
@@ -259,7 +243,6 @@
         document.getElementById('minutesInput').value = 1;
         document.getElementById('secondsInput').value = 0;
         document.getElementById('timerDisplay').textContent = "01:00";
-        document.getElementById('timerDisplay').style.color = '#e0e0e0';
     }
 
     function showModal(message) {
@@ -270,6 +253,49 @@
     function closeModal() {
         document.getElementById('myModal').style.display = 'none';
     }
+
+    function updateCountdown() {
+        const now = new Date();
+
+        // Таймер до Нового Года
+        const newYearDate = new Date(now.getFullYear() + 1, 0, 1);
+        const newYearDiff = newYearDate - now;
+        updateCountdownDisplay('newYearCountdown', newYearDiff);
+
+        // Таймер до 25 Мая
+        const may25Date = new Date(now.getFullYear(), 4, 25);
+        const may25Diff = may25Date - now;
+        if (may25Diff < 0) {
+            may25Date.setFullYear(may25Date.getFullYear() + 1);
+        }
+        const may25DiffNew = may25Date - now;
+        updateCountdownDisplay('may25Countdown', may25DiffNew);
+    }
+
+    function updateCountdownDisplay(elementId, diff) {
+        if (diff > 0) {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            document.getElementById(elementId).textContent = `${days} д ${hours} ч ${minutes} м ${seconds} с`;
+        } else {
+            document.getElementById(elementId).textContent = "00 д 00 ч 00 м 00 с";
+        }
+    }
+
+    function swapCountdowns() {
+        const newYearElement = document.getElementById('newYearSection');
+        const may25Element = document.getElementById('may25Section');
+        if (newYearElement && may25Element) {
+            const newYearClone = newYearElement.cloneNode(true);
+            const may25Clone = may25Element.cloneNode(true);
+            may25Element.replaceWith(newYearClone);
+            newYearElement.replaceWith(may25Clone);
+        }
+    }
+
+    setInterval(updateCountdown, 1000);
 </script>
 
 </body>
